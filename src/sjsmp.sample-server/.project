@@ -3,7 +3,7 @@
 	<name>sjsmp.sample-server</name>
 	<comment></comment>
 	<projects>
-		<project>SimpleJSONManagementLibrary</project>
+		<project>sjsmp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -18,7 +18,7 @@ final class ObjectDescription
     public final Map<String, PropertyDescription> properties = new HashMap<>();
     public final Map<String, ActionDescription> actions = new HashMap<>();
 
-    public ObjectDescription(final Object obj, final String name, final String description, final String group) throws SjmpServerException
+    public ObjectDescription(final Object obj, final String name, final String description, final String group) throws SjsmpServerException
     {
         this.name = name;
         this.description = description;
@@ -35,7 +35,7 @@ final class ObjectDescription
             final String methodName = pair.getKey();
             final Method method = pair.getValue();
             
-            final SjmpProperty property = method.getAnnotation(SjmpProperty.class);
+            final SjsmpProperty property = method.getAnnotation(SjsmpProperty.class);
             if (property != null && methodName.startsWith("get"))
             {
                 if (method.getParameterCount() != 0)
@@ -81,7 +81,7 @@ final class ObjectDescription
                 continue;
             }
             
-            final SjmpAction action = method.getAnnotation(SjmpAction.class);
+            final SjsmpAction action = method.getAnnotation(SjsmpAction.class);
             if (action != null)
             {
                 method.setAccessible(true);

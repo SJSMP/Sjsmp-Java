@@ -37,7 +37,7 @@ final class ActionDescription
         }
     }
     
-    public Object Call(final Object obj, final JSONObject parameters) throws SjmpServerException
+    public Object Call(final Object obj, final JSONObject parameters) throws SjsmpServerException
     {
         final Object[] arguments = new Object[m_parameters.size()];
         for (final String name : parameters.keySet())
@@ -46,12 +46,12 @@ final class ActionDescription
             final MethodParameter parameter = m_parameters.get(name);
             if (parameter == null)
             {
-                throw new SjmpServerException("Argument '" + name + "' not found in method '" + this.name + "'");
+                throw new SjsmpServerException("Argument '" + name + "' not found in method '" + this.name + "'");
             }
 
             if (!parameter.type.equals(value.getClass()))
             {
-                throw new SjmpServerException("Argument '" + name + "' has wrong type");
+                throw new SjsmpServerException("Argument '" + name + "' has wrong type");
             }
 
             arguments[parameter.index] = value;
@@ -64,7 +64,7 @@ final class ActionDescription
         }
         catch (IllegalAccessException | InvocationTargetException e)
         {
-            throw new SjmpServerException("Error calling '" + this.name + "'", e);
+            throw new SjsmpServerException("Error calling '" + this.name + "'", e);
         }
 
         if (this.m_method.getReturnType() == void.class)
@@ -91,7 +91,7 @@ final class ActionDescription
             final JSONObject parameter = new JSONObject();
             parameter.put("type", DataTypes.TypeToName(pi.getType()));
 
-            final SjmpActionParameter attr = pi.getAnnotation(SjmpActionParameter.class);
+            final SjsmpActionParameter attr = pi.getAnnotation(SjsmpActionParameter.class);
             if (attr != null)
             {
                 parameter.put("description", attr.value());

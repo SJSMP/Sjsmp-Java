@@ -2,15 +2,15 @@ package org.sjsmp.sample.server;
 
 import java.io.IOException;
 
-import com.genes1s.sjmp.server.SjmpServerException;
-import com.genes1s.sjmp.server.SjmpServer;
+import org.sjsmp.server.SjsmpServer;
+import org.sjsmp.server.SjsmpServerException;
 
 public class Program
 {
-	
+
 	public static void main(String[] args)
 	{
-		try (SjmpServer server = new SjmpServer("SchemaName", "Schema description", "Sample service group", 12345, 12345, null, "http://portal.activebc.ru/sjmp/register"))
+		try (SjsmpServer server = new SjsmpServer("SchemaName", "Schema description", "Sample service group", 12345, 12345, null, "http://portal.activebc.ru/sjmp/register"))
 		{
 			SampleObject obj1 = new SampleObject();
             SampleObject obj2 = new SampleObject();
@@ -31,12 +31,12 @@ public class Program
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (SjmpServerException e)
+		catch (SjsmpServerException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 }

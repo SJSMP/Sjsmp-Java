@@ -13,8 +13,9 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface SjmpPropertyLimits
+public @interface SjsmpProperty
 {
-    double min();
-    double max();
+	String value();	//actually it's a description, but we use value() as it's a default name
+    boolean readonly() default false;
+    boolean showGraph() default false;
 }

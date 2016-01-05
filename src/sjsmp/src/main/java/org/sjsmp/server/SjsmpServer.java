@@ -35,14 +35,14 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-public final class SjmpServer implements AutoCloseable
+public final class SjsmpServer implements AutoCloseable
 {
     private static final int MAX_REQUEST_LENGTH = 1 * 1024 * 1024;
     private static final int MAX_RESPONSE_LENGTH = 1 * 1024 * 1024;
 
     private HttpServer m_server;
 
-    private final Logger m_logger = LoggerFactory.getLogger(SjmpServer.class);
+    private final Logger m_logger = LoggerFactory.getLogger(SjsmpServer.class);
     private int m_port;
     private final String m_name;
     private final String m_description;
@@ -62,7 +62,7 @@ public final class SjmpServer implements AutoCloseable
     public static final int PORT_MIN = 40234;
     public static final int PORT_MAX = PORT_MIN + 1000;
 
-    public SjmpServer(
+    public SjsmpServer(
             final String name,
             final String description,
             final String group,
@@ -167,17 +167,17 @@ public final class SjmpServer implements AutoCloseable
             }
             catch (IOException | JSONException ex)
             {
-            	throw new SjmpServerException("Failed to read schema push result", ex);
+            	throw new SjsmpServerException("Failed to read schema push result", ex);
             }
 
             if (!jResp.getString("result").equals("ok"))
             {
-                throw new SjmpServerException("Schema push result is not ok: '" + jResp.getString("result") + "'; message is '" + jResp.getString("message") + "'");
+                throw new SjsmpServerException("Schema push result is not ok: '" + jResp.getString("result") + "'; message is '" + jResp.getString("message") + "'");
             }
 
             if (connection.getResponseCode() != HttpStatusCode.OK.code)
             {
-            	throw new SjmpServerException("Schema push http status code is not OK but " + connection.getResponseCode());
+            	throw new SjsmpServerException("Schema push http status code is not OK but " + connection.getResponseCode());
             }
         }
         catch (Exception e)
@@ -251,7 +251,7 @@ public final class SjmpServer implements AutoCloseable
             ProcessServiceRequest(t, command);
 
         }
-        catch (SjmlArgumentException | SjmpServerException ex)
+        catch (SjsmpArgumentException | SjsmpServerException ex)
         {
             m_logger.error("[" + requestHostName + "][error] Exception: \n" + ex.getMessage());
             MakeReponseError(t, "exception: " + ex.getMessage(), HttpStatusCode.InternalServerError);
@@ -264,7 +264,7 @@ public final class SjmpServer implements AutoCloseable
         MakeResponse(t, HttpStatusCode.OK, m_schema);
     }
 
-    private void ProcessServiceRequest(final HttpExchange t, final RequestCommandWrapper command) throws SjmlArgumentException, IOException, SjmpServerException
+    private void ProcessServiceRequest(final HttpExchange t, final RequestCommandWrapper command) throws SjsmpArgumentException, IOException, SjsmpServerException
     {
         JSONObject responseObject;
         switch (command.action)
@@ -284,7 +284,7 @@ public final class SjmpServer implements AutoCloseable
         MakeResponse(t, HttpStatusCode.OK, responseObject);
     }
 
-    private JSONObject ProcessGetProperties(final RequestCommandWrapper command) throws SjmlArgumentException, SjmpServerException
+    private JSONObject ProcessGetProperties(final RequestCommandWrapper command) throws SjsmpArgumentException, SjsmpServerException
     {
         assert(command.action.equals("get_properties"));
 
@@ -335,14 +335,14 @@ public final class SjmpServer implements AutoCloseable
                         }
                         else
                         {
-                            throw new SjmlArgumentException("Unknown property '" + propertyName + "'");
+                            throw new SjsmpArgumentException("Unknown property '" + propertyName + "'");
                         }
                     }
                     objects.put(descr.name, jObj);
                 }
                 else
                 {
-                    throw new SjmlArgumentException("Unknown object '" + objectName + "'");
+                    throw new SjsmpArgumentException("Unknown object '" + objectName + "'");
                 }
             }
         }
@@ -355,7 +355,7 @@ public final class SjmpServer implements AutoCloseable
         return ret;
     }
 
-    private JSONObject ProcessSetProperty(final RequestCommandWrapper command) throws SjmlArgumentException, SjmpServerException
+    private JSONObject ProcessSetProperty(final RequestCommandWrapper command) throws SjsmpArgumentException, SjsmpServerException
     {
         assert(command.action.equals("set_property"));
 
@@ -366,7 +366,7 @@ public final class SjmpServer implements AutoCloseable
         if (objectName == null
             || propertyName == null)
         {
-            throw new SjmlArgumentException("You must set object_name and property_name fields");
+            throw new SjsmpArgumentException("You must set object_name and property_name fields");
         }
 
         m_schemaLock.readLock().lock();
@@ -375,14 +375,14 @@ public final class SjmpServer implements AutoCloseable
             final Object obj = m_objectNames.get(objectName);
             if (obj == null)
             {
-                throw new SjmlArgumentException("Unknown object '" + objectName + "'");
+                throw new SjsmpArgumentException("Unknown object '" + objectName + "'");
             }
 
             final ObjectDescription descr = m_objects.get(obj);
             final PropertyDescription propDescr = descr.properties.get(propertyName);
             if (propDescr == null)
             {
-                throw new SjmlArgumentException("Unknown property '" + propertyName + "'");
+                throw new SjsmpArgumentException("Unknown property '" + propertyName + "'");
             }
 
             propDescr.SetValue(obj, value);
@@ -398,7 +398,7 @@ public final class SjmpServer implements AutoCloseable
         return ret;
     }
 
-    private JSONObject ProcessExecute(final RequestCommandWrapper command) throws SjmlArgumentException, SjmpServerException
+    private JSONObject ProcessExecute(final RequestCommandWrapper command) throws SjsmpArgumentException, SjsmpServerException
     {
         assert(command.action.equals("execute"));
 
@@ -410,7 +410,7 @@ public final class SjmpServer implements AutoCloseable
             || actionName == null
             || parameters == null)
         {
-            throw new SjmlArgumentException("You must set object_name, action_name and parameters fields");
+            throw new SjsmpArgumentException("You must set object_name, action_name and parameters fields");
         }
 
         final JSONObject ret = new JSONObject();
@@ -421,14 +421,14 @@ public final class SjmpServer implements AutoCloseable
             final Object obj = m_objectNames.get(objectName);
             if (obj == null)
             {
-                throw new SjmlArgumentException("Unknown object '" + objectName + "'");
+                throw new SjsmpArgumentException("Unknown object '" + objectName + "'");
             }
 
             final ObjectDescription descr = m_objects.get(obj);
 			final ActionDescription actionDescr = descr.actions.get(actionName);
             if (actionDescr == null)
             {
-                throw new SjmlArgumentException("Unknown action '" + actionName + "'");
+                throw new SjsmpArgumentException("Unknown action '" + actionName + "'");
             }
 
             final Object value = actionDescr.Call(obj, parameters);
@@ -475,22 +475,22 @@ public final class SjmpServer implements AutoCloseable
         }
 	}
 
-	public void RegisterObject(final Object obj) throws SjmpServerException
+	public void RegisterObject(final Object obj) throws SjsmpServerException
 	{
 		RegisterObject(obj, obj.getClass().getSimpleName());
 	}
 
-	public void RegisterObject(final Object obj, final String description) throws SjmpServerException
+	public void RegisterObject(final Object obj, final String description) throws SjsmpServerException
 	{
 		RegisterObject(obj, obj.getClass().getSimpleName(), description, "", true);
 	}
 
-	public void RegisterObject(final Object obj, final String name, final String description) throws SjmpServerException
+	public void RegisterObject(final Object obj, final String name, final String description) throws SjsmpServerException
 	{
 		RegisterObject(obj, name, description, "", true);
 	}
 
-	public void RegisterObject(final Object obj, final String name, final String description, final String group, final boolean immediatePushSchema) throws SjmpServerException
+	public void RegisterObject(final Object obj, final String name, final String description, final String group, final boolean immediatePushSchema) throws SjsmpServerException
     {
         final ObjectDescription descr = new ObjectDescription(obj, name, description, group);
         m_schemaLock.writeLock().lock();
@@ -498,7 +498,7 @@ public final class SjmpServer implements AutoCloseable
         {
             if (m_objects.containsKey(obj) || m_objectNames.containsKey(name))
             {
-                throw new SjmpServerException("object already registered: " + obj + ", name '" + name + "'");
+                throw new SjsmpServerException("object already registered: " + obj + ", name '" + name + "'");
             }
             m_objects.put(obj, descr);
             m_objectNames.put(name, obj);
@@ -516,12 +516,12 @@ public final class SjmpServer implements AutoCloseable
         }
     }
 
-	public boolean UnRegisterObject(final Object obj) throws SjmpServerException
+	public boolean UnRegisterObject(final Object obj) throws SjsmpServerException
 	{
 		return UnRegisterObject(obj, true);
 	}
 
-    public boolean UnRegisterObject(final Object obj, final boolean immediatePushSchema) throws SjmpServerException
+    public boolean UnRegisterObject(final Object obj, final boolean immediatePushSchema) throws SjsmpServerException
     {
     	boolean removed;
         m_schemaLock.writeLock().lock();
@@ -530,14 +530,14 @@ public final class SjmpServer implements AutoCloseable
             ObjectDescription descr;
             if ((descr = m_objects.get(obj)) == null)
             {
-                throw new SjmpServerException("Object '" + obj + "' not found");
+                throw new SjsmpServerException("Object '" + obj + "' not found");
             }
 
             removed = m_objects.remove(obj) != null;
             boolean removedName = m_objectNames.remove(descr.name) != null;
             if (removedName != removed)
             {
-                throw new SjmpServerException("Wrong internal state: object names '" + descr.name + "' not found in name index");
+                throw new SjsmpServerException("Wrong internal state: object names '" + descr.name + "' not found in name index");
             }
 
             RefreshSchema();
@@ -676,7 +676,7 @@ public final class SjmpServer implements AutoCloseable
         @Override
         public void handle(HttpExchange t) throws IOException
         {
-        	SjmpServer.this.RequestReceived(t);
+        	SjsmpServer.this.RequestReceived(t);
         }
     }
 

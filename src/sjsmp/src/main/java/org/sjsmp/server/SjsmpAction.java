@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface SjmpActionParameter
+@Target(ElementType.METHOD)
+public @interface SjsmpAction
 {
 	String value();	//actually it's a description, but we use value() as it's a default name
+	boolean requireConfirm() default false;
 }
